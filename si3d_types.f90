@@ -302,6 +302,7 @@
    !          ----- Point Sources & Sinks Eqs. Vars. & Arrays *********************
    ! ... Variables used specificallly to model plumes - 
    REAL    :: k4sod      ! 5.7870E-6 ! g/m2/s
+   REAL    :: k4wod      ! ACC 2026
    REAL(8) :: salamb     ! Vars. for generalized version of plume model
    REAL(8) :: patm       ! Vars. for generalized version of plume model
    REAL(8)   , ALLOCATABLE, DIMENSION(:    )  :: lambdanot ! Plume width

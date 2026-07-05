@@ -1746,7 +1746,7 @@ SUBROUTINE matmom ( ieq, t_matmom2,Bstart, Bend, Bex,Beagx,Bearx,Bagx,Barx,Beagy
                     !     towards east if a source; negative or towards west if
                     !     a sink) - idetr = 1 by default; 
                     !Uhvalue = Qpss(k,inn)*uEpss(iodev(inn))/dy/FLOAT(idetr(iodev(inn))) 
-					Uhvalue = (Qpss(k,inn)*uEpss(iodev(inn))/dy/2)/idetr(iodev(inn)) !FJRPlume JCT
+					Uhvalue = (Qpss(k,inn)*uEpss(iodev(inn))/dy)/idetr(iodev(inn)) !FJRPlume JCT
                     aa(2,k) = aa(2,k) + Usource
                     gg(  k) = gg(  k) + Usource * Uhvalue
                   ENDDO
@@ -1759,13 +1759,13 @@ SUBROUTINE matmom ( ieq, t_matmom2,Bstart, Bend, Bex,Beagx,Bearx,Bagx,Barx,Beagy
                     ! ... Strength of Source - here it is assumed that 
                     !     only half of the flow shows up in the control volume
                     !     used in the momentum equation -> factor 2 below
-                    !Usource = ABS(Qpss(k,inn))/(dx*dy*hup(k,l))*twodt1/2.
+                    Usource = ABS(Qpss(k,inn))/(dx*dy*hup(k,l))*twodt1/2.
                     IF(ptype(iodev(inn)) == -2) Usource = 1.E2 !Quitado Cintia
                     ! ... Velocity of the source in N direction (positive
                     !     towards north if a source; negative or towards south if
                     !     a sink) - idetr = 1 by default; 
                     !Uhvalue = - Qpss(k,inn)*uWpss(iodev(inn))/dx/FLOAT(idetr(iodev(inn))) 
-					Uhvalue = -(Qpss(k,inn)*uWpss(iodev(inn))/dy/2)/idetr(iodev(inn)) !FJRPlume JCT
+					Uhvalue = -(Qpss(k,inn)*uWpss(iodev(inn))/dy)/idetr(iodev(inn)) !FJRPlume JCT
                     aa(2,k) =   aa(2,k) + Usource
                     gg(  k) =   gg(  k) + Usource * Uhvalue
                   ENDDO
@@ -1953,14 +1953,14 @@ SUBROUTINE matmom ( ieq, t_matmom2,Bstart, Bend, Bex,Beagx,Bearx,Bagx,Barx,Beagy
                     ! ... Strength of Source - here it is assumed that 
                     !     only half of the flow shows up in the control volume
                     !     used in the momentum equation -> factor 2 below
-                    !Vsource = ABS(Qpss(k,inn))/(dx*dy*hvp(k,l))*twodt1/2.
+                    Vsource = ABS(Qpss(k,inn))/(dx*dy*hvp(k,l))*twodt1/2.
                     !print*,"y- Source Strength: ",Vsource
                     IF(ptype(iodev(inn)) == -2) Vsource = 1.E2 !Quitado Cintia
                     ! ... Velocity of the source in N direction (positive
                     !     towards north if a source; negative or towards south if
                     !     a sink) - idetr = 1 by default; 
                     !Vhvalue = Qpss(k,inn)*vNpss(iodev(inn))/dx/FLOAT(idetr(iodev(inn))) 
-					!Vhvalue = (Qpss(k,inn)*vNpss(iodev(inn))/dx/2)/idetr(iodev(inn)) !FJRPlume JCT
+					Vhvalue = (Qpss(k,inn)*vNpss(iodev(inn))/dx)/idetr(iodev(inn)) !FJRPlume JCT
                     aa(2,k) = aa(2,k) + Vsource
                     gg(  k) = gg(  k) + Vsource * Vhvalue
                   ENDDO
@@ -1972,13 +1972,13 @@ SUBROUTINE matmom ( ieq, t_matmom2,Bstart, Bend, Bex,Beagx,Bearx,Bagx,Barx,Beagy
                     ! ... Strength of Source - here it is assumed that 
                     !     only half of the flow shows up in the control volume
                     !     used in the momentum equation -> factor 2 below
-                    !Vsource = ABS(Qpss(k,inn))/(dx*dy*hvp(k,l))*twodt1/2.
+                    Vsource = ABS(Qpss(k,inn))/(dx*dy*hvp(k,l))*twodt1/2.
                     IF(ptype(iodev(inn)) == -2) Vsource = 1.E2!Quitado Cintia
                     ! ... Velocity of the source in S direction (negative
                     !     towards south if a source; positive or towards north if
                     !     a sink) - idetr = 1 by default; 
                     !Vhvalue = -Qpss(k,inn)*vSpss(iodev(inn))/dx/FLOAT(idetr(iodev(inn))) 
-					!Vhvalue = -(Qpss(k,inn)*vSpss(iodev(inn))/dx/2)/idetr(iodev(inn)) !FJRPlume JCT
+					Vhvalue = -(Qpss(k,inn)*vSpss(iodev(inn))/dx)/idetr(iodev(inn)) !FJRPlume JCT
                     aa(2,k) = aa(2,k) + Vsource
                     gg(  k) = gg(  k) + Vsource * Vhvalue
                   ENDDO
@@ -4683,7 +4683,8 @@ SUBROUTINE ImTracer (nt,Bstart,Bend,Bex)
    REAL, DIMENSION (1:km1,Bstart:Bend+1), INTENT(INOUT) :: Bex
 
    !.....Local variables.....
-   REAL :: twodt1, Osource, Qsource, k4sod, k4wod
+   !REAL :: twodt1, Osource, Qsource, k4sod, k4wod
+   REAL :: twodt1, Osource, Qsource
    INTEGER :: i, j, k, l, k1s, kms, kt, nwlayers, inn, kk, noc,liter,innH
    REAL, DIMENSION (1:km1) :: hn
    REAL, DIMENSION (3,1:km1) :: aa
@@ -4697,10 +4698,9 @@ SUBROUTINE ImTracer (nt,Bstart,Bend,Bex)
 
    ! ... Constants used in solution
    twodt1 = twodt*tz
-   k4sod = 2.08e-5 ! 1.8 g/m2/d in sec that apply to the bottom layer
-   k4wod = 1.04e-5  ! 0.9 g/m2/d in sec that apply to to the upper 5 layers 
-   !k4sod = 0.00 ! 0 g/m2/d in sec that apply to the bottom layer
-   !k4wod = 0.00 ! 0 g/m2/d in sec that apply to to the upper 5 layers 
+   !k4sod = 2.08e-5 ! 1.8 g/m2/d in sec that apply to the bottom layer
+   !k4wod = 1.04e-5  ! 0.9 g/m2/d in sec that apply to to the upper 5 layers 
+
 
    !.....Loop over interior sal-pts to solve for
    !     matrix from the active scalar equation.....
@@ -4780,12 +4780,14 @@ SUBROUTINE ImTracer (nt,Bstart,Bend,Bex)
               !ENDDO
               
               IF (n>8640) THEN               ! 2 days with dt 20 s, ACC 2026
-              ds(kms) = ds(kms) - k4sod
-              ds(kms-1) = ds(kms-1) - k4wod
-              ds(kms-2) = ds(kms-2) - k4wod
-              ds(kms-3) = ds(kms-3) - k4wod
-              ds(kms-4) = ds(kms-4) - k4wod
-              ds(kms-5) = ds(kms-5) - k4wod
+                ds(kms) = ds(kms) - k4sod
+                ds(kms-1) = ds(kms-1) - k4wod
+                ds(kms-2) = ds(kms-2) - k4wod
+                ds(kms-3) = ds(kms-3) - k4wod
+                ds(kms-4) = ds(kms-4) - k4wod
+                ds(kms-5) = ds(kms-5) - k4wod
+                ds(kms-6) = ds(kms-6) - k4wod
+                ds(kms-7) = ds(kms-7) - k4wod    ! 4 m of hypolimnipm
               ENDIF
 
               !IF (i == 193 .AND. j == 74) THEN

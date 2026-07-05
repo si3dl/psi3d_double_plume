@@ -4300,7 +4300,9 @@ SUBROUTINE PointSourceSinkSolve(n,istep,thrs)
              qscfm   = real(flpss(nn),8)       ;       ! Air flow rate 
              frconot = 1.00            ;       ! Fraction of O2 in air (not used?)
 	           lambnot = lambdanot(nn)   ;       ! Half-width 
-             linot   = lnot(nn)        ;       ! Diffuser length
+             !linot   = lnot(nn)        ;       ! Diffuser length
+             linot   = dfLgth        ;       ! Diffuser length
+             PRINT*,'linot ',linot
 	           diamm   = diammb(nn)      ;       ! Initial bubble diameter
              alphaii  = alphai(nn)          ! Entrainment coefficient inner plume (-)
              alphaoo  = alphao(nn)          ! Entrainment coefficient outer plume (-)
@@ -5047,11 +5049,11 @@ SUBROUTINE PointSourceSinkInput
 			    PRINT*,'flag3.4'   
 
 		! Read half diffuser length (m) JCT_2020_RECT
-        READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) lnot(nn)
-					    PRINT*,'flag3.5'   
+        !READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) lnot(nn)
+				!	    PRINT*,'flag3.5'   
 
-        IF (ios /= 0) CALL input_error ( ios, 51 )
-	        PRINT*,'flag4'
+        !IF (ios /= 0) CALL input_error ( ios, 51 )
+	      !  PRINT*,'flag4'
 
         ! Read initial bubble diameter (mm)
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) diammb(nn)
@@ -5093,19 +5095,28 @@ SUBROUTINE PointSourceSinkInput
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) patm
         IF (ios /= 0) CALL input_error ( ios, 51 )
           PRINT*,'flag6'
+
         ! Read constant sediment oxygen demand
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) k4sod
           !unidades: g/m2/day to g/m2/s
+          PRINT*, 'k4sod', k4sod ! JCT
           k4sod = k4sod/86400.00
 
+        ! Read constant water oxygen demand --- Added ACC 2026
         IF (ios /= 0) CALL input_error ( ios, 51 )
-        PRINT*, 'k4sod', k4sod ! JCT
+        READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) k4wod
+          !unidades: g/m2/day to g/m2/s
+          PRINT*, 'k4wod', k4wod ! JCT
+          k4wod = k4wod/86400.00
+        IF (ios /= 0) CALL input_error ( ios, 51 )
+
         ! Read frequency of update 
 		        PRINT*,'flag7'
         READ (UNIT=i52, FMT='(10X,G11.2)', IOSTAT=ios) pdt(nn)
         IF (ios /= 0) CALL input_error ( ios, 51 )
                 PRINT*,'flag8'
         ! Read data array
+
         READ (UNIT=i52, FMT='(A)', IOSTAT=ios) commentline
         DO j = 1, nptspss
            READ (UNIT=i52, FMT=pssfmt, IOSTAT=ios) &
@@ -5135,6 +5146,7 @@ SUBROUTINE PointSourceSinkInput
           ENDIF
         ENDDO
         dfL(nn) = ncdev * idx 
+        PRINT*,'dfL = ',dfL(nn)
      END SELECT
 
      ! ... Close IO unit
